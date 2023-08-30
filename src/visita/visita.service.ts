@@ -157,7 +157,7 @@ export class VisitaService {
       const visitas = this.findOnePlane(id);
       const data =`<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
     
-      botLogs(data);
+      //botLogs(data);
 
       return this.findOnePlane(id);
 
