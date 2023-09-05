@@ -11,7 +11,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserImage } from './entities/user-image.entity';
 import { isUUID } from 'class-validator';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
-
+import { EmailService } from 'src/email/email.service';
+import { ActivateUserDto } from './dto/activated-user.tdo';
+import { ValidateResetPassword } from './dto/validate-reset-password.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 
 @Injectable()
@@ -26,20 +30,39 @@ export class AuthService {
 
     private readonly jwtService:JwtService,
     private readonly dataSource: DataSource,
+    private readonly emailService:EmailService,
   ) { }
 
   async create(createUserDto: CreateUserDto) {
+    const { password, email, ...userData } = createUserDto;
+
+    const userEmail = await this.userRepository.findOne({
+      where: {
+        email
+      }
+    })
+    if (userEmail) throw new NotFoundException(`El correo  ${email} ya existe...`);
+
     try {
 
-      const { password, ...userData } = createUserDto;
-
+     
       const user = this.userRepository.create({
         ...userData,
-        password: bcrypt.hashSync(password, 10)
+        email,
+        password: bcrypt.hashSync(password, 10),
+        activationToken:uuidv4()
       });
 
       await this.userRepository.save(user);
       delete user.password;
+
+      const data={
+        to:email,
+        subject:'Activación de Cuenta de Usuairo',
+        template:'activate-account',
+        url:`https://josue19688.github.io/aj/v1/auth/activate-account?id=${user.id}&code=${user.activationToken}`
+      };
+      await this.emailService.sendEmail(data);
 
 
       return {
@@ -54,6 +77,76 @@ export class AuthService {
     }
 
   }
+
+  async activateUser(activateUserDto: ActivateUserDto) {
+    const { id, code } = activateUserDto;
+    const user = await this.userRepository.findOne({
+      where: {
+        id: id,
+        activationToken: code,
+        isActive: false
+      }
+    })
+
+    if (!user) throw new NotFoundException(`User notFound!!`);
+
+    user.isActive=true;
+    await this.userRepository.save(user);
+    return 'https://josue19688.github.io/aj/';
+
+
+  }
+
+  async resetPasswordToken(resetPasswordDto:ResetPasswordDto){
+    const {email} =resetPasswordDto;
+
+    const user =await this.userRepository.findOne({
+      where:{
+        email
+      }
+    })
+
+    const token = this.pgenerate(10);
+
+    if (!user) throw new NotFoundException(`User notFound!!`);
+
+    user.resetPasswordToken=uuidv4();
+    user.password=bcrypt.hashSync(token, 10)
+    this.userRepository.save(user);
+
+
+   
+    const data={
+      to:email,
+      subject:'Cambio de Contraseña',
+      template:'reset-password',
+      url:`https://josue19688.github.io/aj/`,
+      token:token
+    };
+   const respuesta = await this.emailService.sendEmail(data);
+
+
+    //!Falta crear un modulo de email para enviar correos
+    return {msg:'Se envio una contraseña temporal a su correo!!'};
+  }
+
+  async validatePassword(validateResetPassword:ValidateResetPassword){
+    const {email, password} = validateResetPassword;
+
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+        isActive: true
+      }
+    })
+
+    if (!user) throw new NotFoundException(`User notFound!!`);
+
+    user.password=bcrypt.hashSync(password, 10)
+    this.userRepository.save(user);
+    return {msg:'Contraseña reestablecida exitosamente!!'};
+  }
+
 
   async login(loginUserDto: LoginUserDto) {
 
@@ -209,5 +302,14 @@ export class AuthService {
     throw new InternalServerErrorException(`Error al crear el registro en el servidor`);
   }
 
+  private pgenerate(length:any) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result+5;
+ }
 
 }

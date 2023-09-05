@@ -8,7 +8,7 @@ import { Visita } from './entities/visita.entity';
 import { DataSource, Repository } from 'typeorm';
 import { VisitaImage } from './entities/visita-image.entity';
 import { validate as isUUID } from 'uuid';
-import { botLogs} from 'src/middlewares/log';
+import { botLogs } from 'src/middlewares/log';
 
 @Injectable()
 export class VisitaService {
@@ -67,21 +67,13 @@ export class VisitaService {
 
   async findAllVisitas(userId:string) {
     
-    const visita = await this.visitaRepository.find({
+    const visitas = await this.visitaRepository.find({
       where:{
         'user':{
           'id':userId
         }
-      },
-      relations:{
-        images:true
       }
     })
-
-    const visitas = visita.map(item=>({
-      ...item,
-      images:item.images.map(img=>img.url)
-    }))
 
     return {ok:true, visitas};
   }
@@ -130,8 +122,6 @@ export class VisitaService {
       ...toUpdate
     });
 
-   
-
     if (!visita) throw new NotFoundException(`El registro con ${id} no existe`);
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -143,7 +133,6 @@ export class VisitaService {
       if (images) {
         await queryRunner.manager.delete(VisitaImage, { visita: { id } });
         visita.images = images.map(image => 
-         
           this.visitaImageRepository.create({ url: image,user })
         )
       }
@@ -157,7 +146,7 @@ export class VisitaService {
       const visitas = this.findOnePlane(id);
       const data =`<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
     
-      //botLogs(data);
+      botLogs(data);
 
       return this.findOnePlane(id);
 

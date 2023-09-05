@@ -18,7 +18,6 @@ import { NovedadService } from 'src/novedad/novedad.service';
 import { VisitaService } from 'src/visita/visita.service';
 import { ArchivoService } from 'src/archivo/archivo.service';
 
-
 @ApiTags('Files')
 @Controller('files')
 //@Auth()
@@ -139,7 +138,6 @@ export class FilesController {
 
     secureUrls = files.map(files => `${this.configService.get('HOST_API')}/files/uploads/${files.filename}`);
     const arrayImages = secureUrls;
-   
 
     switch (modelo) {
       case 'usuario':
@@ -155,8 +153,7 @@ export class FilesController {
         this.novedadService.update(id, { images: arrayImages }, user)
         break;
       case 'visita':
-        this.visitaService.update(id, { images: arrayImages }, user);
-        
+        this.visitaService.update(id, { images: arrayImages }, user)
         break;
       case 'archivo':
         this.archivoService.update(id, { images: arrayImages }, user)

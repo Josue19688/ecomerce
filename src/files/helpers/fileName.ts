@@ -1,6 +1,5 @@
 
 import {Request} from 'express';
-
 import {v4 as uuid} from 'uuid';
 
 
@@ -23,8 +22,6 @@ export const fileNames = (req:Request, files:Express.Multer.File,callback:Functi
     const fileExtension = files.mimetype.split('/')[1];
    
     const name = `${uuid()}.${fileExtension}`;
-
-    
 
     callback(null,name);
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Req, SetMetadata, Patch, Param, ParseUUIDPipe, Query, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, SetMetadata, Patch, Param, ParseUUIDPipe, Query, Delete, Redirect } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto,LoginUserDto } from './dto';
 import { Auth, GetUser} from './decorators';
@@ -7,6 +7,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { ValidRoles } from './interfaces';
+import { ActivateUserDto } from './dto/activated-user.tdo';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ValidateResetPassword } from './dto/validate-reset-password.dto';
 
 
 @ApiTags('Auth')
@@ -23,6 +26,29 @@ export class AuthController {
   login(@Body() loginUserDto:LoginUserDto){
     return this.authService.login(loginUserDto);
   }
+
+  @Get('activate-account')
+  @Redirect('https://josue19688.github.io/aj/')
+  activateAccount(@Query() activateUserDto: ActivateUserDto) {
+    return this.authService.activateUser(activateUserDto);
+  }
+
+  @Patch('reset-password')
+  resetPassword(
+    @Body() resetPasswordDto:ResetPasswordDto
+  ){
+    return this.authService.resetPasswordToken(resetPasswordDto);
+  }
+
+  @Patch('validate-reset-password')
+  validatePassword(
+    @Body() validateResetPassword:ValidateResetPassword
+  ){
+    return this.authService.validatePassword(validateResetPassword);
+  }
+
+
+  
 
   @Get()
   findAll(@Query() paginatioDto:PaginationDto) {

@@ -43,6 +43,16 @@ export class User {
     })
     roles?:string[];
 
+    @Column('uuid',{ unique: true})
+    activationToken: string;
+
+
+    @Column('uuid',{ 
+        unique: true,  
+        nullable: true 
+    })
+    resetPasswordToken: string;
+
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 

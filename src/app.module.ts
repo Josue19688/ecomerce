@@ -12,6 +12,7 @@ import { NovedadModule } from './novedad/novedad.module';
 import { VisitaModule } from './visita/visita.module';
 import { AgenteModule } from './agente/agente.module';
 import { ArchivoModule } from './archivo/archivo.module';
+import { EmailModule } from './email/email.module';
 
 
 @Module({
@@ -21,11 +22,11 @@ import { ArchivoModule } from './archivo/archivo.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host:'containers-us-west-94.railway.app',
-      port:7380,
+      host:'containers-us-west-125.railway.app',
+      port:7290,
       database:'railway',
       username:'postgres',
-      password:'EXISsjZpGYbHMvTbREN6',
+      password:'LzzUgA29luTTcKTV48WY',
       // host: process.env.HOST,
       // port: +process.env.DB_PORT,
       // database: process.env.NAME,
@@ -45,7 +46,8 @@ import { ArchivoModule } from './archivo/archivo.module';
     NovedadModule,
     VisitaModule,
     AgenteModule,
-    ArchivoModule, 
+    ArchivoModule,
+    EmailModule, 
   ],
 
 })
