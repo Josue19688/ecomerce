@@ -16,13 +16,14 @@ import { ActivateUserDto } from './dto/activated-user.tdo';
 import { ValidateResetPassword } from './dto/validate-reset-password.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger('AuthService')
 
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserImage)
@@ -56,11 +57,13 @@ export class AuthService {
       await this.userRepository.save(user);
       delete user.password;
 
+      const urlValidacion =`${this.configService.get('HOST_API')}/auth/activate-account?id=${user.id}&code=${user.activationToken}`
+
       const data={
         to:email,
         subject:'Activación de Cuenta de Usuairo',
         template:'activate-account',
-        url:`https://josue19688.github.io/aj/v1/auth/activate-account?id=${user.id}&code=${user.activationToken}`
+        url:urlValidacion
       };
       await this.emailService.sendEmail(data);
 
@@ -92,7 +95,7 @@ export class AuthService {
 
     user.isActive=true;
     await this.userRepository.save(user);
-    return 'https://josue19688.github.io/aj/';
+    return 'https://josue19688.github.io/cca/';
 
 
   }
@@ -120,13 +123,12 @@ export class AuthService {
       to:email,
       subject:'Cambio de Contraseña',
       template:'reset-password',
-      url:`https://josue19688.github.io/aj/`,
+      url:`https://josue19688.github.io/cca/`,
       token:token
     };
    const respuesta = await this.emailService.sendEmail(data);
 
 
-    //!Falta crear un modulo de email para enviar correos
     return {msg:'Se envio una contraseña temporal a su correo!!'};
   }
 
@@ -155,7 +157,7 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { email: true, password: true,id:true,fullName:true,roles:true }
+      select: { email: true, password: true,id:true,fullName:true,roles:true,isActive:true }
     });
 
     if (!user) throw new UnauthorizedException('Credenciales invalidas!!');

@@ -28,7 +28,7 @@ export class AuthController {
   }
 
   @Get('activate-account')
-  @Redirect('https://josue19688.github.io/aj/')
+  @Redirect('https://josue19688.github.io/cca/')
   activateAccount(@Query() activateUserDto: ActivateUserDto) {
     return this.authService.activateUser(activateUserDto);
   }
@@ -51,6 +51,7 @@ export class AuthController {
   
 
   @Get()
+  @Auth()
   findAll(@Query() paginatioDto:PaginationDto) {
     return this.authService.findAll(paginatioDto);
   }
@@ -74,6 +75,7 @@ export class AuthController {
   }
 
   @Delete(':id')
+  @Auth()
   remove(@Param('id',ParseUUIDPipe) id: string) {
     return this.authService.remove(id);
   }

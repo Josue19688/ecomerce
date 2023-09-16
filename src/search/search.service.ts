@@ -645,17 +645,16 @@ export class SearchService {
     
     const data = await this.visitaRepository.find({
       where:{
+        autorizacion_admin:true,
+        autorizacion_seguridad:true,
         fechas:ArrayContains([hoy])
       },
       relations:{
         images:true
       }
     })
-    //return data;
-        
-
-   
     
+        
 
     const visitas = data.map(item=>({
       ...item,

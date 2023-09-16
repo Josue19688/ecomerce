@@ -9,6 +9,7 @@ import { DataSource, Repository } from 'typeorm';
 import { VisitaImage } from './entities/visita-image.entity';
 import { validate as isUUID } from 'uuid';
 import { botLogs } from 'src/middlewares/log';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class VisitaService {
@@ -20,7 +21,8 @@ export class VisitaService {
     @InjectRepository(VisitaImage)
     private readonly visitaImageRepository:Repository<VisitaImage>,
 
-    private readonly dataSource:DataSource
+    private readonly dataSource:DataSource,
+    private readonly emailService:EmailService,
   ){}
 
 
@@ -67,18 +69,58 @@ export class VisitaService {
 
   async findAllVisitas(userId:string) {
     
-    const visitas = await this.visitaRepository.find({
+    const visita = await this.visitaRepository.find({
       where:{
         'user':{
           'id':userId
         }
+      }
+    });
+
+    
+    const visitas = visita.map(item=>({
+      ...item,
+      images:item.images.map(img=>img.url)
+    }))
+
+    return {ok:true, visitas};
+  
+    
+  }
+
+  async findOnePlane(termino:string){
+    const {images = [], ...rest}= await this.findOne(termino);
+    const visita = {
+      ...rest,
+      images:images.map(img=>img.url)
+    };
+
+    return {ok:true, visita}
+
+  }
+
+  /**
+   * Para autorizacion de visitas y permitir el ingreso a las instalaciones
+   */
+  async findAllAutorizationAdmin(){
+    const visitas = await this.visitaRepository.find({
+      where:{
+        autorizacion_admin:false
       }
     })
 
     return {ok:true, visitas};
   }
 
+  async findAllAutorizationSeguridad(){
+    const visitas = await this.visitaRepository.find({
+      where:{
+        autorizacion_seguridad:false
+      }
+    })
 
+    return {ok:true, visitas};
+  }
 
   async findOne(termino: string) {
     let visita:Visita;
@@ -104,16 +146,7 @@ export class VisitaService {
     return visita;
   }
 
-  async findOnePlane(termino:string){
-    const {images = [], ...rest}= await this.findOne(termino);
-    const visita = {
-      ...rest,
-      images:images.map(img=>img.url)
-    };
-
-    return {ok:true, visita}
-
-  }
+ 
 
   async update(id: string, updateVisitaDto: UpdateVisitaDto, user:User) {
     const { images, ...toUpdate } = updateVisitaDto;
@@ -144,9 +177,20 @@ export class VisitaService {
       await queryRunner.release();
 
       const visitas = this.findOnePlane(id);
-      const data =`<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
+      
     
-      botLogs(data);
+      if((await visitas).visita.autorizacion_admin==true ){
+        const data =`<b>Autorización Administración: </b>${user.fullName},\n<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
+        botLogs(data);
+      }
+
+      if((await visitas).visita.autorizacion_seguridad==true ){
+        const data =`<b>Autorización Seguridad: </b>${user.fullName},\n<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
+        botLogs(data);
+      }
+
+      
+     
 
       return this.findOnePlane(id);
 
@@ -158,6 +202,70 @@ export class VisitaService {
       this.handleExceptions(error);
     }
   }
+
+  async updateAutorizacion(id: string, updateVisitaDto: UpdateVisitaDto, user:User) {
+    const { images, ...toUpdate } = updateVisitaDto;
+    const visita = await this.visitaRepository.preload({
+      id,
+      ...toUpdate
+    });
+
+    if (!visita) throw new NotFoundException(`El registro con ${id} no existe`);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+
+    
+
+      
+      await queryRunner.manager.save(visita);
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      const visitas = this.findOnePlane(id);
+      
+      const {email} = (await visitas).visita.user;
+      const {empresa} = (await visitas).visita;
+      const data={
+        to:email,
+        subject:'Autorización de Visitas',
+        template:'auth-visita',
+        url:empresa
+      };
+
+      
+      if((await visitas).visita.autorizacion_admin==true && (await visitas).visita.autorizacion_seguridad==true){
+        await this.emailService.sendEmail(data);
+      }
+      
+    
+      if((await visitas).visita.autorizacion_admin==true ){
+        const data =`<b>Autorización Administración: </b>${user.fullName},\n<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
+        botLogs(data);
+      }
+
+      if((await visitas).visita.autorizacion_seguridad==true ){
+        const data =`<b>Autorización Seguridad: </b>${user.fullName},\n<b>Tipo Visita </b> : ${(await visitas).visita.tipo}, \n<b>Ingreso por  </b>: ${(await visitas).visita.puesto},\n<b>Nombres </b> : ${(await visitas).visita.nombre}, \n<b>Dpi </b> : ${(await visitas).visita.dpi},\n<b>Placas </b> :${(await visitas).visita.placa},\n<b>Empresa </b> :${(await visitas).visita.empresa},\n<b>Empleado Recibe </b> : ${(await visitas).visita.empleado},\n<b>Fechas  </b> : ${(await visitas).visita.fechas},\n<b>Descripcion </b>:${(await visitas).visita.descripcion}`;
+        botLogs(data);
+      }
+
+      
+     
+
+      return this.findOnePlane(id);
+
+    } catch (error) {
+
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+
+      this.handleExceptions(error);
+    }
+  }
+
 
   async remove(id: string) {
     const visita = await this.findOne(id);

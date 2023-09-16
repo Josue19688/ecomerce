@@ -15,7 +15,7 @@ export class EmailService {
       from:'advinjosuev899@gmail.com',
       subject:subject,
       template: template,
-      context: {  // Data to be sent to template engine.
+      context: { 
         code: 'cf1a3f828287',
         username: 'john doe',
         url:url,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, Put } from '@nestjs/common';
 import { VisitaService } from './visita.service';
 import { CreateVisitaDto } from './dto/create-visita.dto';
 import { UpdateVisitaDto } from './dto/update-visita.dto';
@@ -28,6 +28,18 @@ export class VisitaController {
     return this.visitaService.findAll(paginatioDto);
   }
 
+  @Get('autorization')
+  findAllAutorization() {
+    return this.visitaService.findAllAutorizationAdmin();
+  }
+
+
+  @Get('autorizationSeguridad')
+  findAllAutorizationSeguridad() {
+    return this.visitaService.findAllAutorizationSeguridad();
+  }
+
+
   @Get('user')
   findAllVisitas(
     @GetUser() user:User
@@ -47,6 +59,15 @@ export class VisitaController {
     @GetUser() user:User
   ) {
     return this.visitaService.update(id, updateVisitaDto,user);
+  }
+
+  @Put('authorizationVisita/:id')
+  updateAutorizacion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateVisitaDto: UpdateVisitaDto,
+    @GetUser() user:User
+  ) {
+    return this.visitaService.updateAutorizacion(id, updateVisitaDto,user);
   }
 
   @Delete(':id')

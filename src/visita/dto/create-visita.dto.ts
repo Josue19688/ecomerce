@@ -75,16 +75,19 @@ export class CreateVisitaDto {
         description:'Hora de ingreso',
         nullable:true
     })
-    @IsString()
+    @IsString({each:true})
+    @IsArray()
     @IsOptional()
-    ingreso?:Date;
+    ingreso?:string[];
 
     @ApiProperty({
-        description:'Hora de salida'
+        description:'Hora de salida',
+        nullable:true
     })
-    @IsString()
+    @IsString({each:true})
+    @IsArray()
     @IsOptional()
-    salida?:Date;
+    salida?:string[];
 
     isActive?:boolean;
 
@@ -95,6 +98,20 @@ export class CreateVisitaDto {
     @IsString()
     @IsOptional()
     descripcion?:string;
+
+    @ApiProperty({
+        description:'true/false',
+        nullable:true
+    })
+    @IsOptional()
+    autorizacion_admin?:boolean;
+
+     @ApiProperty({
+        description:'true/false',
+        nullable:true
+    })
+    @IsOptional()
+    autorizacion_seguridad?:boolean;
     
     @ApiProperty({
         description:'Arreglo de imagenes ',

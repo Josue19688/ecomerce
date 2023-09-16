@@ -89,16 +89,22 @@ export class Visita {
         example:'2023-10-10',
         description:'Fecha de ingreso'
     })
-    @Column({ type: 'timestamp' })
-    ingreso:Date;
+    @Column('text',{
+        array:true,
+        default:[]
+    })
+    ingreso:string[];
 
 
     @ApiProperty({
         example:'2023-10-10',
         description:'Fecha del suceso'
     })
-    @Column({ type: 'timestamp', nullable:true, })
-    salida?:Date;
+    @Column('text',{
+        array:true,
+        default:[]
+    })
+    salida?:string[];
 
     @Column('bool',{
         default:true
@@ -116,6 +122,16 @@ export class Visita {
         
     })
     descripcion?:string;
+
+    @Column('bool',{
+        default:false
+    })
+    autorizacion_admin:boolean;
+
+    @Column('bool',{
+        default:false
+    })
+    autorizacion_seguridad:boolean;
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
