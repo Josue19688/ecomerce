@@ -20,7 +20,7 @@ export class AgenteImage{
     @Column('text')
     url:string;
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
     @ManyToOne(

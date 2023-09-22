@@ -60,12 +60,7 @@ export class Novedad {
         example: '2023-10-10',
         description: 'Fecha del suceso'
     })
-    @Column(
-        {
-            type: 'timestamp',
-            nullable:true 
-        }
-    )
+    @Column({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     fecha: Date;
 
     @ApiProperty({
@@ -117,12 +112,7 @@ export class Novedad {
     )
     images?: NovedadImage[];
 
-    @CreateDateColumn(
-        { 
-            type: 'timestamp',
-            nullable:true 
-        }
-    )
+    @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
 

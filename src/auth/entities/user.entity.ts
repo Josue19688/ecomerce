@@ -53,7 +53,7 @@ export class User {
     })
     resetPasswordToken: string;
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
     //TODO:RELACIONES CON IMAGES DE USUARIOS

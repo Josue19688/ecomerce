@@ -102,7 +102,7 @@ export class Product {
     )
     images?:ProductImage[];
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
     @ApiProperty({

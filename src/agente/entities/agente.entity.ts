@@ -112,7 +112,7 @@ export class Agente {
     )
     images?:AgenteImage[];
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
     @ApiProperty({

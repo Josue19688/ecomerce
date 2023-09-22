@@ -76,7 +76,6 @@ export class VisitaService {
         }
       }
     });
-
     
     const visitas = visita.map(item=>({
       ...item,
@@ -87,6 +86,8 @@ export class VisitaService {
   
     
   }
+
+ 
 
   async findOnePlane(termino:string){
     const {images = [], ...rest}= await this.findOne(termino);
@@ -103,22 +104,33 @@ export class VisitaService {
    * Para autorizacion de visitas y permitir el ingreso a las instalaciones
    */
   async findAllAutorizationAdmin(){
-    const visitas = await this.visitaRepository.find({
+    const visita = await this.visitaRepository.find({
       where:{
         autorizacion_admin:false
       }
     })
 
+    const visitas = visita.map(item=>({
+      ...item,
+      images:item.images.map(img=>img.url)
+    }))
+
+   
     return {ok:true, visitas};
   }
 
   async findAllAutorizationSeguridad(){
-    const visitas = await this.visitaRepository.find({
+    const visita = await this.visitaRepository.find({
       where:{
         autorizacion_seguridad:false
       }
     })
 
+
+    const visitas = visita.map(item=>({
+      ...item,
+      images:item.images.map(img=>img.url)
+    }))
     return {ok:true, visitas};
   }
 
@@ -255,6 +267,39 @@ export class VisitaService {
       
      
 
+      return this.findOnePlane(id);
+
+    } catch (error) {
+
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+
+      this.handleExceptions(error);
+    }
+  }
+
+
+  async updateVisita(id: string, updateVisitaDto: UpdateVisitaDto, user:User) {
+    const { images, ...toUpdate } = updateVisitaDto;
+    const visita = await this.visitaRepository.preload({
+      id,
+      ...toUpdate
+    });
+
+    if (!visita) throw new NotFoundException(`El registro con ${id} no existe`);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+
+      
+      await queryRunner.manager.save(visita);
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      
       return this.findOnePlane(id);
 
     } catch (error) {

@@ -70,6 +70,15 @@ export class VisitaController {
     return this.visitaService.updateAutorizacion(id, updateVisitaDto,user);
   }
 
+  @Put('ingresoVisita/:id')
+  updateVisita(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateVisitaDto: UpdateVisitaDto,
+    @GetUser() user:User
+  ) {
+    return this.visitaService.updateVisita(id, updateVisitaDto,user);
+  }
+
   @Delete(':id')
   remove(@Param('id',ParseUUIDPipe) id: string) {
     return this.visitaService.remove(id);
