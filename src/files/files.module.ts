@@ -8,12 +8,14 @@ import { AgenteModule } from 'src/agente/agente.module';
 import { NovedadModule } from 'src/novedad/novedad.module';
 import { VisitaModule } from 'src/visita/visita.module';
 import { ArchivoModule } from 'src/archivo/archivo.module';
+import { PostModule } from 'src/post/post.module';
 
 @Module({
   controllers: [FilesController],
   providers: [FilesService],
   imports:[
     ProductsModule,
+    PostModule,
     AgenteModule,
     NovedadModule,
     VisitaModule,

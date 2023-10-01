@@ -17,6 +17,7 @@ import { AgenteService } from 'src/agente/agente.service';
 import { NovedadService } from 'src/novedad/novedad.service';
 import { VisitaService } from 'src/visita/visita.service';
 import { ArchivoService } from 'src/archivo/archivo.service';
+import { PostService } from 'src/post/post.service';
 
 @ApiTags('Files')
 @Controller('files')
@@ -30,6 +31,7 @@ export class FilesController {
     private readonly novedadService: NovedadService,
     private readonly visitaService: VisitaService,
     private readonly archivoService: ArchivoService,
+    private readonly postService: PostService,
     private readonly authService: AuthService
   ) { }
 
@@ -129,7 +131,7 @@ export class FilesController {
     @GetUser() user: User
   ) {
 
-    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo'];
+    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo','post'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
@@ -157,6 +159,9 @@ export class FilesController {
         break;
       case 'archivo':
         this.archivoService.update(id, { images: arrayImages }, user)
+        break;
+      case 'post':
+        this.postService.update(id, { images: arrayImages })
         break;
       default:
         'No se encontro el modelo';
