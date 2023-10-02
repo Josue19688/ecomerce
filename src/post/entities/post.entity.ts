@@ -67,7 +67,12 @@ export class Post {
     })
     comentarios:string[];
 
-    
+    @ApiProperty({
+        example:'T-shirt',
+        description:'Nombre del producto',
+    })
+    @Column('text')
+    fechas:string;
 
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;

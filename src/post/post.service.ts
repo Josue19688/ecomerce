@@ -48,7 +48,9 @@ export class PostService {
     const { limit = 12, offset = 0 } = paginationDto;
     const visita = await this.postRepository.find({
       take:limit,
-      skip:offset,
+      order: {
+        fechas: 'DESC', // Ordenar por fecha de creación en orden descendente
+      },
       relations:{
         images:true
       }

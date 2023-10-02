@@ -23,6 +23,14 @@ export class CreatePostDto {
     descripcion?:string;
 
     @ApiProperty({
+        description:'Fecha final search',
+        nullable:true
+    })
+    @IsString()
+    @IsOptional()
+    fechas?:string;
+
+    @ApiProperty({
         description:'Arreglo de imagenes ',
         nullable:true
     })
