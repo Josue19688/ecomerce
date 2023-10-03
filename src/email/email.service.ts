@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SendEmailDto } from './dto/sendEmail.dto';
+import { SendEmailPersonalDto } from './dto/sendMailPersonal';
+import { botLogs } from 'src/middlewares/log';
 
 @Injectable()
 export class EmailService {
@@ -24,4 +26,17 @@ export class EmailService {
     })
     return 'Correo enviado exitosamente!!';
   }
+
+  async sendEmailPersonal(sendEmailPersonalDto:SendEmailPersonalDto){
+   
+    const { nombre, compania, email, mensaje} = sendEmailPersonalDto;
+
+    const data =`<b>Solicitante: </b>${nombre},\n<b>Correo </b> : ${email}, \n<b>Compania</b>: ${compania},\n<b>Mensaje </b> : ${mensaje}, \n`;
+    botLogs(data);
+  
+    return 'Correo enviado exitosamente!!';
+  }
+
+
+
 }

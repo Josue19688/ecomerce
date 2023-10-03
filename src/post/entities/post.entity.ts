@@ -71,7 +71,11 @@ export class Post {
         example:'T-shirt',
         description:'Nombre del producto',
     })
-    @Column('text')
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
     fechas:string;
 
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
