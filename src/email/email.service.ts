@@ -34,7 +34,7 @@ export class EmailService {
     const data =`<b>Solicitante: </b>${nombre},\n<b>Correo </b> : ${email}, \n<b>Compania</b>: ${compania},\n<b>Mensaje </b> : ${mensaje}, \n`;
     botLogs(data);
   
-    return 'Correo enviado exitosamente!!';
+    return {ok:true,msg:'Correo enviado exitosamente!!'};
   }
 
 
