@@ -10,9 +10,6 @@ import { Archivo } from "src/archivo/entities/archivo.entity";
 import { ArchivoImage } from "src/archivo/entities/archivo-image.entity";
 import { AgenteImage } from "src/agente/entities/agente-image.entity";
 import { Agente } from "src/agente/entities/agente.entity";
-import { Inventario } from "src/inventario/entities/inventario.entity";
-import { InventarioImage } from "src/inventario/entities/inventario-image.entity";
-import { Mantenimiento } from "src/mantenimiento/entities/mantenimiento.entity";
 
 
 
@@ -144,28 +141,7 @@ export class User {
     )
     agenteImage:AgenteImage;
 
-     //TODO:RELACIONES CON INVENTARIOS
-
-     @OneToMany(
-        ()=>Inventario,
-        (inventario)=>inventario.user
-    )
-    inventario:Inventario;
-
-    @OneToMany(
-        ()=>InventarioImage,
-        (inventarioImage)=>inventarioImage.user
-    )
-    inventarioImage:InventarioImage;
-
-    //TODO:Relaciones para el mantenimiento
    
-    @OneToMany(
-        ()=>Mantenimiento,
-        (mantenimiento)=>mantenimiento.user
-    )
-    mantenimiento:Mantenimiento;
-
 
     @BeforeInsert()
     checkFieldBeforeInsert(){
