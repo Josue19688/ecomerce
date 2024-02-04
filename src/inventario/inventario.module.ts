@@ -12,7 +12,7 @@ import { EmailModule } from 'src/email/email.module';
   controllers: [InventarioController],
   providers: [InventarioService],
   imports:[
-    TypeOrmModule.forFeature([Inventario,InventarioImage]),
+    
     AuthModule,
     ConfigModule,
     EmailModule

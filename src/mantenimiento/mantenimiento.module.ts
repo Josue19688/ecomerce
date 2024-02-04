@@ -11,7 +11,7 @@ import { Mantenimiento } from './entities/mantenimiento.entity';
   controllers: [MantenimientoController],
   providers: [MantenimientoService],
   imports:[
-    TypeOrmModule.forFeature([Mantenimiento]),
+    
     AuthModule,
     ConfigModule,
     EmailModule
