@@ -47,8 +47,6 @@ import { InventarioModule } from './inventario/inventario.module';
     ArchivoModule,
     EmailModule,
     PostModule,
-    MantenimientoModule,
-    InventarioModule, 
   ],
 
 })
