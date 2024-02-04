@@ -14,8 +14,6 @@ import { AgenteModule } from './agente/agente.module';
 import { ArchivoModule } from './archivo/archivo.module';
 import { EmailModule } from './email/email.module';
 import { PostModule } from './post/post.module';
-import { MantenimientoModule } from './mantenimiento/mantenimiento.module';
-import { InventarioModule } from './inventario/inventario.module';
 
 
 @Module({
