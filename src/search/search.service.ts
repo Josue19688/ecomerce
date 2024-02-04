@@ -632,6 +632,7 @@ export class SearchService {
 
   }
 
+  ///para visitas de hoy actual
 
   async SearchVisitaByDate(){
 

@@ -14,6 +14,8 @@ import { AgenteModule } from './agente/agente.module';
 import { ArchivoModule } from './archivo/archivo.module';
 import { EmailModule } from './email/email.module';
 import { PostModule } from './post/post.module';
+import { MantenimientoModule } from './mantenimiento/mantenimiento.module';
+import { InventarioModule } from './inventario/inventario.module';
 
 
 @Module({
@@ -23,16 +25,11 @@ import { PostModule } from './post/post.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host:'containers-us-west-151.railway.app',
-      port:7431,
-      database:'railway',
-      username:'postgres',
-      password:'r20nv21bNHHYD7v9ImmI',
-      // host: process.env.HOST,
-      // port: +process.env.DB_PORT,
-      // database: process.env.NAME,
-      // username: process.env.DB_USERNAME,
-      // password: process.env.DB_PASSWORD,
+      host: process.env.HOST,
+      port: +process.env.DB_PORT,
+      database: process.env.NAME,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
       autoLoadEntities:true,
       synchronize:true, ///solo para desarrollo en produccion cambiar a false
     }),
@@ -49,7 +46,9 @@ import { PostModule } from './post/post.module';
     AgenteModule,
     ArchivoModule,
     EmailModule,
-    PostModule, 
+    PostModule,
+    MantenimientoModule,
+    InventarioModule, 
   ],
 
 })

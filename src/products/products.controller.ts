@@ -12,7 +12,7 @@ import { SearchDto } from 'src/common/dto/search.dto';
 
 @ApiTags('Products')
 @Controller('products')
-@Auth()
+
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -21,6 +21,7 @@ export class ProductsController {
   @ApiResponse({status:201,description:'Producto was created', type:Product})
   @ApiResponse({status:400,description:'Bad Request'})
   @ApiResponse({status:403,description:'Forbidden Token related'})
+  @Auth()
   create(
     @Body() createProductDto: CreateProductDto,
     @GetUser() user:User
@@ -44,6 +45,7 @@ export class ProductsController {
     return this.productsService.findOnePlane(termino);
   }
 
+  @Auth()
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -53,6 +55,7 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto,user);
   }
 
+  @Auth()
   @Delete(':id')
   remove(@Param('id',ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);
