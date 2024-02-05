@@ -69,7 +69,7 @@ export class CreateProductDto {
         description:'Genero del producto',
         nullable:false,
     })
-    @IsIn(['men','women','kid','unisex'])
+    
     gender:string;
 
     @ApiProperty({
