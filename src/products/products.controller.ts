@@ -35,6 +35,11 @@ export class ProductsController {
     return this.productsService.findAll(paginatioDto);
   }
 
+  @Get('/ten')
+  findAllTenn(@Query() paginatioDto:PaginationDto) {
+    return this.productsService.findAllTen(paginatioDto);
+  }
+
   @Get('/search')
   findAllModelos(@Query() searchDto:SearchDto) {
     return this.productsService.findAllModels(searchDto);

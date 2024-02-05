@@ -69,7 +69,6 @@ export class CreateProductDto {
         description:'Genero del producto',
         nullable:false,
     })
-    
     gender:string;
 
     @ApiProperty({
