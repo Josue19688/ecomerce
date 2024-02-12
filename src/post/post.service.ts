@@ -117,7 +117,7 @@ export class PostService {
       if (images) {
         await queryRunner.manager.delete(PostImage, { post: { id } });
         post.images = images.map(image => 
-          this.postImageRepository.create({ url: image,user})
+          this.postImageRepository.create({ url: image})
         )
       }
 
