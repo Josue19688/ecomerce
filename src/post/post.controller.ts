@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, ParseUUIDPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -38,7 +38,7 @@ export class PostController {
   @Auth()
   @Patch(':id')
   update(
-    @Param('id') id: string, 
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePostDto: UpdatePostDto,
     @GetUser() user:User
     ) {
@@ -48,7 +48,10 @@ export class PostController {
 
   
   @Put(':id')
-  updateComments(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  updateComments(
+    @Param('id') id: string,
+     @Body() updatePostDto: UpdatePostDto, 
+     @GetUser() user:User) {
     return this.postService.updateComments(id, updatePostDto);
   }
 

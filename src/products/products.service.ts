@@ -162,7 +162,8 @@ export class ProductsService {
     id: string, 
     updateProductDto:
      UpdateProductDto,
-     user:User) {
+     user:User
+     ) {
 
     const { images, ...toUpdate } = updateProductDto;
     const product = await this.productRepository.preload({

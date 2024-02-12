@@ -26,7 +26,7 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @GetUser() user:User
   ) {
-    console.log(createProductDto)
+    
     return this.productsService.create(createProductDto,user);
   }
 
