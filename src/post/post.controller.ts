@@ -17,7 +17,7 @@ export class PostController {
   @ApiResponse({status:201,description:'Post was created', type:Post})
   @ApiResponse({status:400,description:'Bad Request'})
   @ApiResponse({status:403,description:'Forbidden Token related'})
-
+  @Auth()
   create(
     @Body() createPostDto: CreatePostDto,
     @GetUser() user:User
@@ -35,7 +35,7 @@ export class PostController {
     return this.postService.findOne(id);
   }
 
- 
+  @Auth()
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
