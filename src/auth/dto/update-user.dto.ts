@@ -13,6 +13,10 @@ export class UpdateUserDto{
     email?:string;
 
     @IsString()
+    @IsOptional()
+    ocupacion?:string;
+
+    @IsString()
     @MinLength(6)
     @MaxLength(50)
     @IsOptional()

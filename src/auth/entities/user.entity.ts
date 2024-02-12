@@ -10,6 +10,8 @@ import { Archivo } from "src/archivo/entities/archivo.entity";
 import { ArchivoImage } from "src/archivo/entities/archivo-image.entity";
 import { AgenteImage } from "src/agente/entities/agente-image.entity";
 import { Agente } from "src/agente/entities/agente.entity";
+import { Post } from "src/post/entities/post.entity";
+import { PostImage } from "src/post/entities/post-image.entity";
 
 
 
@@ -31,6 +33,9 @@ export class User {
 
     @Column('text')
     fullName?:string;
+
+    @Column('text')
+    ocupacion?:string;
 
     @Column('bool',{
         default:false
@@ -69,6 +74,19 @@ export class User {
     )
     images?:UserImage[];
 
+     //TODO:RELACIONES CON POST
+
+     @OneToMany(
+        ()=>Post,
+        (post)=>post.user
+    )
+    post:Post;
+
+    @OneToMany(
+        ()=>PostImage,
+        (postImage)=>postImage.user
+    )
+    postImage:PostImage;
 
     //TODO:RELACIONES CON PRODUCTOS
 

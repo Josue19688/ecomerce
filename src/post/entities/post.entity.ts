@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { PostImage } from "./post-image.entity";
+import { User } from "src/auth/entities/user.entity";
 
 @Entity()
 export class Post {
@@ -81,6 +82,16 @@ export class Post {
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 
+    @ApiProperty({
+        example:User,
+        description:'Retornara un usuario relacionado'
+    })
+    @ManyToOne(
+        ()=>User,
+        (user)=>user.product,
+        {eager:true}
+    )
+    user:User;
 
 
 }

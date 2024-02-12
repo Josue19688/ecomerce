@@ -4,6 +4,7 @@
 
 import { Entity, PrimaryGeneratedColumn,Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { Post } from './post.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 
 @Entity()
@@ -25,4 +26,10 @@ export class PostImage{
     )
     post:Post
 
+    @ManyToOne(
+        ()=>User,
+        (user)=>user.postImage,
+        {eager:true}
+    )
+    user:User;
 }

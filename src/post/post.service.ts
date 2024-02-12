@@ -7,6 +7,7 @@ import { DataSource, Repository } from 'typeorm';
 import { PostImage } from './entities/post-image.entity';
 import { validate as isUUID } from 'uuid';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class PostService {
@@ -25,12 +26,13 @@ export class PostService {
 
 
 
-  async create(createPostDto: CreatePostDto) {
+  async create(createPostDto: CreatePostDto, user:User) {
     try {
       const {images=[], ...postDetails}=createPostDto;
       const post = this.postRepository.create({
         ...postDetails,
-        images:images.map(image=>this.postImageRepository.create({url:image}))
+        images:images.map(image=>this.postImageRepository.create({url:image})),
+        user
       })
 
       await this.postRepository.save(post);
@@ -96,7 +98,7 @@ export class PostService {
 
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
+  async update(id: string, updatePostDto: UpdatePostDto, user:User) {
     
     const { images, ...toUpdate } = updatePostDto;
     const post = await this.postRepository.preload({
@@ -115,10 +117,11 @@ export class PostService {
       if (images) {
         await queryRunner.manager.delete(PostImage, { post: { id } });
         post.images = images.map(image => 
-          this.postImageRepository.create({ url: image })
+          this.postImageRepository.create({ url: image,user})
         )
       }
 
+      post.user=user;
       await queryRunner.manager.save(post);
       await queryRunner.commitTransaction();
       await queryRunner.release();
