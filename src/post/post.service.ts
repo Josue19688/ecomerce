@@ -98,7 +98,7 @@ export class PostService {
 
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto, user:User) {
+  async update(id: string, updatePostDto: UpdatePostDto) {
     
     const { images, ...toUpdate } = updatePostDto;
     const post = await this.postRepository.preload({
@@ -121,7 +121,6 @@ export class PostService {
         )
       }
 
-      post.user=user;
       await queryRunner.manager.save(post);
       await queryRunner.commitTransaction();
       await queryRunner.release();

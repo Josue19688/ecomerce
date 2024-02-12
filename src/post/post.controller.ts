@@ -40,9 +40,9 @@ export class PostController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePostDto: UpdatePostDto,
-    @GetUser() user:User
+   
     ) {
-    return this.postService.update(id, updatePostDto, user);
+    return this.postService.update(id, updatePostDto);
   }
 
 
