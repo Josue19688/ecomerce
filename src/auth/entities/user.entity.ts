@@ -34,7 +34,9 @@ export class User {
     @Column('text')
     fullName?:string;
 
-    @Column('text')
+    @Column('text',{
+        nullable: true 
+    })
     ocupacion?:string;
 
     @Column('bool',{
