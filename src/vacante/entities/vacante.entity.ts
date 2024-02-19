@@ -123,7 +123,7 @@ export class Vacante {
     @OneToMany(
         ()=>Candidato,
         (candidato)=>candidato.vacante,
-        {cascade:true,eager:true}
+        {cascade:true}
     )
     candidatos?:Candidato[];
 
