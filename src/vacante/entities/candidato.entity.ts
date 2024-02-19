@@ -3,13 +3,13 @@
 import { Entity, PrimaryGeneratedColumn,Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { Vacante } from './vacante.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 
 @Entity()
 export class Candidato{
-
-    @PrimaryGeneratedColumn()
-    id:number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column('text')
     nombre:string;

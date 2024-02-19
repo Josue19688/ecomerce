@@ -84,10 +84,10 @@ export class CreateVacanteDto {
         description:'Arreglo candidatos',
         nullable:true
     })
-    //@IsString({each:true})
-    //@IsArray()
+    @IsString({each:true})
+    @IsArray()
     @IsOptional()
-    candidatos?:Candidato;
+    candidatos?:Candidato[];
 
 
 
