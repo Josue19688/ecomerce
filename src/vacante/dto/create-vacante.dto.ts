@@ -87,7 +87,7 @@ export class CreateVacanteDto {
     @IsString({each:true})
     @IsArray()
     @IsOptional()
-    candidatos?:Candidato[];
+    candidatos?:string[];
 
 
 
