@@ -7,6 +7,7 @@ import { GetUser, Auth } from 'src/auth/decorators';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { Vacante } from './entities/vacante.entity';
+import { CreateCandidatoDto } from './dto/candidato.dto';
 
 @ApiTags('Vacantes')
 @Controller('vacante')
@@ -66,9 +67,9 @@ export class VacanteController {
   @Put(':id')
   updateCandidatos(
     @Param('id') id: string, 
-    @Body() updateVacanteDto: UpdateVacanteDto
+    @Body() candidatosDto: CreateCandidatoDto[]
     ) {
-    return this.vacanteService.updateCandidato(id, updateVacanteDto);
+    return this.vacanteService.actualizarCandidatos(id, candidatosDto);
   }
 
   @Delete(':id')
