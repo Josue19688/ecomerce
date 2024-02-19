@@ -30,7 +30,7 @@ export class VacanteService {
       const { candidatos = [], ...vacanteDetails } = createVacanteDto;
       const vacante = this.vacanteRepository.create({
         ...vacanteDetails,
-        candidatos: candidatos.map((data:any)=> this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})),
+        //candidatos: candidatos.map((data:any)=> this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})),
         user
       });
       await this.vacanteRepository.save(vacante);
@@ -138,10 +138,11 @@ export class VacanteService {
       try {
   
         if (candidatos) {
+          this.candidatoRepository.create(candidatos)
           //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-          vacante.candidatos = candidatos.map((data:any)=> 
-            this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
-          )
+          // vacante.candidatos = candidatos.map((data:any)=> 
+          //   this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
+          // )
         }
   
   
@@ -185,9 +186,9 @@ export class VacanteService {
       
       if (candidatos) {
         //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-        vacante.candidatos = candidatos.map((data:any) => 
-          this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
-        )
+        //vacante.candidatos = candidatos.map((data:any) => 
+          this.candidatoRepository.create(candidatos)
+        //)
       }
 
 
