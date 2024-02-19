@@ -7,8 +7,6 @@ import { GetUser, Auth } from 'src/auth/decorators';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { Vacante } from './entities/vacante.entity';
-import { CreateCandidatoDto } from './dto/candidato.dto';
-
 
 @ApiTags('Vacantes')
 @Controller('vacante')
@@ -66,18 +64,11 @@ export class VacanteController {
   }
 
   @Put(':id')
-  async updateCandidatos(
+  updateCandidatos(
     @Param('id') id: string, 
-    @Body() candidatosDto: CreateCandidatoDto[]
+    @Body() updateVacanteDto: UpdateVacanteDto
     ) {
-      try {
-        const vacante = await this.vacanteService.actualizarCandidatos(id, candidatosDto);
-      // Serializa la respuesta utilizando stringify de circular-json
-      
-      return vacante;
-      } catch (error) {
-        throw error;
-      }
+    return this.vacanteService.actualizarCandidatos(id, updateVacanteDto);
   }
 
   @Delete(':id')

@@ -164,32 +164,78 @@ export class VacanteService {
       }
   }
 
-  async actualizarCandidatos(idVacante: string, candidatosDto: CreateCandidatoDto[]): Promise<Vacante> {
-    const vacante = await this.vacanteRepository.findOneBy({ id: idVacante });
-    if (!vacante) {
-      throw new NotFoundException('La vacante no fue encontrada');
-    }
 
-    try {
-      vacante.candidatos = await Promise.all(
-        candidatosDto.map(async candidatoDto => {
-            const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
-            nuevoCandidato.vacante = vacante;
-            return await this.candidatoRepository.save(nuevoCandidato);
-        })
-      );
+
+  async actualizarCandidatos(
+    id: string, 
+    updateVacanteDto: UpdateVacanteDto
+    ) {
+    
+      const { candidatos, ...toUpdate } = updateVacanteDto;
+      const vacante = await this.vacanteRepository.preload({
+        id,
+        ...toUpdate
+      });
+  
+      if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
+  
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+  
+      try {
+  
+        if (candidatos) {
+          //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
+          vacante.candidatos = candidatos.map(data=> 
+            this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
+          )
+        }
+  
+  
+        
+        await queryRunner.manager.save(vacante);
+        await queryRunner.commitTransaction();
+        await queryRunner.release();
+  
+  
+        return this.findOnePlane(id);
+  
+      } catch (error) {
+  
+        await queryRunner.rollbackTransaction();
+        await queryRunner.release();
+  
+        this.handleExceptions(error);
+      }
+  }
+
+  // async actualizarCandidatos(idVacante: string, candidatosDto: CreateCandidatoDto[]): Promise<Vacante> {
+  //   const vacante = await this.vacanteRepository.findOneBy({ id: idVacante });
+  //   if (!vacante) {
+  //     throw new NotFoundException('La vacante no fue encontrada');
+  //   }
+
+  //   try {
+  //     vacante.candidatos = await Promise.all(
+  //       candidatosDto.map(async candidatoDto => {
+  //           const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
+  //           nuevoCandidato.vacante = vacante;
+  //           return await this.candidatoRepository.save(nuevoCandidato);
+  //       })
+  //     );
   
       
       
-      return await this.vacanteRepository.save(vacante);
+  //     return await this.vacanteRepository.save(vacante);
       
        
-    } catch (error) {
-      this.handleExceptions(error);
-    }
+  //   } catch (error) {
+  //     this.handleExceptions(error);
+  //   }
 
    
-  }
+  // }
   
 
   async remove(id: string) {
