@@ -6,6 +6,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetUser, Auth } from 'src/auth/decorators';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
+import { Vacante } from './entities/vacante.entity';
 
 @ApiTags('Vacantes')
 @Controller('vacante')
@@ -13,7 +14,7 @@ export class VacanteController {
   constructor(private readonly vacanteService: VacanteService) {}
 
   @Post()
-  @ApiResponse({status:201,description:'Post was created', type:Post})
+  @ApiResponse({status:201,description:'Post was created', type:Vacante})
   @ApiResponse({status:400,description:'Bad Request'})
   @ApiResponse({status:403,description:'Forbidden Token related'})
   @Auth()
