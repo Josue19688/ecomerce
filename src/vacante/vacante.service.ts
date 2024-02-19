@@ -169,35 +169,15 @@ export class VacanteService {
       throw new NotFoundException('La vacante no fue encontrada');
     }
 
-    // Cargar los candidatos relacionados con la vacante
-    await this.vacanteRepository
-      .createQueryBuilder('vacante')
-      .leftJoinAndSelect('vacante.candidatos', 'candidato')
-      .where('vacante.id = :id', { id: idVacante })
-      .getOneOrFail();
-
-    // Actualizar los candidatos existentes o crear nuevos según corresponda
     vacante.candidatos = await Promise.all(
       candidatosDto.map(async candidatoDto => {
-        // Si el candidato ya existe, actualizarlo; de lo contrario, crearlo
-        // if (candidatoDto.id) {
-        //   let candidatoExistente = vacante.candidatos.find(candidato => candidato.id === candidatoDto.id);
-        //   if (!candidatoExistente) {
-        //     throw new NotFoundException(`El candidato con ID ${candidatoDto.id} no pertenece a esta vacante`);
-        //   }
-        //   // Actualizar los campos del candidato
-        //   candidatoExistente = Object.assign(candidatoExistente, candidatoDto);
-        //   return await this.candidatoRepository.save(candidatoExistente);
-        // } else {
-          // Crear un nuevo candidato y asignarlo a la vacante
           const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
           nuevoCandidato.vacante = vacante;
           return await this.candidatoRepository.save(nuevoCandidato);
-        //}
       })
     );
 
-    // Guardar la vacante con los candidatos actualizados
+    
     return await this.vacanteRepository.save(vacante);
   }
   
