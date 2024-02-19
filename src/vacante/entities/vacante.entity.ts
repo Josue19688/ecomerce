@@ -125,7 +125,7 @@ export class Vacante {
         (candidato)=>candidato.vacante,
         {cascade:true,eager:true}
     )
-    candidatos?:Candidato[];
+    candidatos?:Candidato;
 
    
     @ManyToOne(
