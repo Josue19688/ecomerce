@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsOptional, IsString } from "class-validator";
+import { Candidato } from "../entities/candidato.entity";
 
 
 
@@ -11,7 +12,7 @@ export class CreateVacanteDto {
         minLength:1
     })
     @IsString()
-    title:string;
+    titulo:string;
 
     @ApiProperty({
         description:'Titulo para el ceo',
@@ -86,7 +87,7 @@ export class CreateVacanteDto {
     @IsString({each:true})
     @IsArray()
     @IsOptional()
-    candidatos?:string[];
+    candidatos?:Candidato[];
 
 
 

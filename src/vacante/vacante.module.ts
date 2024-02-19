@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vacante } from './entities/vacante.entity';
 import { Candidato } from './entities/candidato.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   controllers: [VacanteController],
@@ -13,7 +14,8 @@ import { AuthModule } from 'src/auth/auth.module';
     TypeOrmModule.forFeature([
       Vacante, Candidato
     ]),
-    AuthModule
+    AuthModule,
+    EmailModule
   ],
   exports:[
     VacanteService,
