@@ -120,10 +120,6 @@ export class Vacante {
     createdAt: Date;
 
 
-    @ApiProperty({
-        example:"http://localhost:3000/api/v1/files/product/6f77b86c-cc9a-4848-b982-e2f382a69ec3.png",
-        description:'Retornara una o un arreglo de images'
-    })
     @OneToMany(
         ()=>Candidato,
         (candidato)=>candidato.vacante,
@@ -131,10 +127,7 @@ export class Vacante {
     )
     candidatos?:Candidato[];
 
-    @ApiProperty({
-        example:User,
-        description:'Retornara un usuario relacionado'
-    })
+   
     @ManyToOne(
         ()=>User,
         (user)=>user.vacante,
