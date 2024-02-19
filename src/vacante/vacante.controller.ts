@@ -8,7 +8,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { Vacante } from './entities/vacante.entity';
 import { CreateCandidatoDto } from './dto/candidato.dto';
-import { stringify } from 'circular-json';
+
 
 @ApiTags('Vacantes')
 @Controller('vacante')
@@ -73,8 +73,8 @@ export class VacanteController {
       try {
         const vacante = await this.vacanteService.actualizarCandidatos(id, candidatosDto);
       // Serializa la respuesta utilizando stringify de circular-json
-      const serializedVacante = stringify(vacante);
-      return serializedVacante;
+      
+      return vacante;
       } catch (error) {
         throw error;
       }
