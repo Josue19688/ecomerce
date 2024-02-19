@@ -8,6 +8,7 @@ import { Candidato } from './entities/candidato.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { isUUID } from 'class-validator';
+import { CreateCandidatoDto } from './dto/candidato.dto';
 
 @Injectable()
 export class VacanteService {
@@ -162,64 +163,101 @@ export class VacanteService {
       }
   }
 
+  async actualizarCandidatos(idVacante: string, candidatosDto: CreateCandidatoDto[]): Promise<Vacante> {
+    const vacante = await this.vacanteRepository.findOneBy({ id: idVacante });
+    if (!vacante) {
+      throw new NotFoundException('La vacante no fue encontrada');
+    }
 
-  async updateCandidato(
-    id: string, 
-    updateVacanteDto: UpdateVacanteDto,
-    ) {
-      const { candidatos, ...toUpdate } = updateVacanteDto;
-      const vacante = await this.vacanteRepository.preload({
-        id,
-        ...toUpdate
-      });
+    // Cargar los candidatos relacionados con la vacante
+    await this.vacanteRepository
+      .createQueryBuilder('vacante')
+      .leftJoinAndSelect('vacante.candidatos', 'candidato')
+      .where('vacante.id = :id', { id: idVacante })
+      .getOneOrFail();
+
+    // Actualizar los candidatos existentes o crear nuevos según corresponda
+    vacante.candidatos = await Promise.all(
+      candidatosDto.map(async candidatoDto => {
+        // Si el candidato ya existe, actualizarlo; de lo contrario, crearlo
+        // if (candidatoDto.id) {
+        //   let candidatoExistente = vacante.candidatos.find(candidato => candidato.id === candidatoDto.id);
+        //   if (!candidatoExistente) {
+        //     throw new NotFoundException(`El candidato con ID ${candidatoDto.id} no pertenece a esta vacante`);
+        //   }
+        //   // Actualizar los campos del candidato
+        //   candidatoExistente = Object.assign(candidatoExistente, candidatoDto);
+        //   return await this.candidatoRepository.save(candidatoExistente);
+        // } else {
+          // Crear un nuevo candidato y asignarlo a la vacante
+          const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
+          nuevoCandidato.vacante = vacante;
+          return await this.candidatoRepository.save(nuevoCandidato);
+        //}
+      })
+    );
+
+    // Guardar la vacante con los candidatos actualizados
+    return await this.vacanteRepository.save(vacante);
+  }
   
-      // if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
+  // async updateCandidato(
+  //   id: string, 
+  //   updateVacanteDto: UpdateVacanteDto,
+  //   ) {
+  //     const { candidatos, ...toUpdate } = updateVacanteDto;
+  //     const vacante = await this.vacanteRepository.preload({
+  //       id,
+  //       ...toUpdate
+  //     });
   
-      // const vacante = await this.vacanteRepository.findOne(id)
-      // if (!vacante) {
-      //   throw new Error('La vacante no existe');
-      // }
+  //     // if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
+  
+  //     // const vacante = await this.vacanteRepository.findOne(id)
+  //     // if (!vacante) {
+  //     //   throw new Error('La vacante no existe');
+  //     // }
   
   
 
-    try {
+  //   try {
 
-      const candidatosEntities = await Promise.all(
-        candidatos.map(async candidatoData => {
-          const { nombre, email, telefono, documentos } = candidatoData;
-          const candidato = new Candidato();
-          candidato.nombre = nombre;
-          candidato.email = email;
-          candidato.telefono = telefono;
-          candidato.documentos = documentos;
-          return await this.candidatoRepository.save(candidato);
-        }),
-      );
+  //     const candidatosEntities = await Promise.all(
+  //       candidatos.map(async candidatoData => {
+  //         const { nombre, email, telefono, documentos } = candidatoData;
+  //         const candidato = new Candidato();
+  //         candidato.nombre = nombre;
+  //         candidato.email = email;
+  //         candidato.telefono = telefono;
+  //         candidato.documentos = documentos;
+  //         return await this.candidatoRepository.save(candidato);
+  //       }),
+  //     );
   
       
-      // if (candidatos) {
-      //   //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-      //   vacante.candidatos = candidatos.map((data:any) => 
-      //     this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
-      //   )
-      // }
+  //     // if (candidatos) {
+  //     //   //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
+  //     //   vacante.candidatos = candidatos.map((data:any) => 
+  //     //     this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
+  //     //   )
+  //     // }
 
-      vacante.candidatos = candidatosEntities;
-      return await this.vacanteRepository.save(vacante);
+  //     vacante.candidatos = candidatosEntities;
+  //     return await this.vacanteRepository.save(vacante);
 
      
       
-      //TODO: aqui podemos implementar se le envie un correo al creador de la vacante
+  //     //TODO: aqui podemos implementar se le envie un correo al creador de la vacante
 
-      return this.findOnePlane(id);
+  //     return this.findOnePlane(id);
 
-    } catch (error) {
+  //   } catch (error) {
 
       
 
-      this.handleExceptions(error);
-    }
-  }
+  //     this.handleExceptions(error);
+  //   }
+  // }
 
 
 
