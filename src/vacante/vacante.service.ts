@@ -188,7 +188,7 @@ export class VacanteService {
         if (candidatos) {
           //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
           vacante.candidatos = candidatos.map(data=> 
-            this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
+            this.candidatoRepository.create(data)
           )
         }
   
