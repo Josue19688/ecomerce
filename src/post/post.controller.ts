@@ -10,15 +10,17 @@ import { User } from 'src/auth/entities/user.entity';
 
 @ApiTags('Post')
 @Controller('post')
+
+
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
 
-  @Auth()
   @Post()
   @ApiResponse({status:201,description:'Post was created', type:Post})
   @ApiResponse({status:400,description:'Bad Request'})
   @ApiResponse({status:403,description:'Forbidden Token related'})
+  @Auth()
   create(
     @Body() createPostDto: CreatePostDto,
     @GetUser() user:User

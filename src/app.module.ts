@@ -14,6 +14,7 @@ import { AgenteModule } from './agente/agente.module';
 import { ArchivoModule } from './archivo/archivo.module';
 import { EmailModule } from './email/email.module';
 import { PostModule } from './post/post.module';
+import { VacanteModule } from './vacante/vacante.module';
 
 
 @Module({
@@ -45,6 +46,7 @@ import { PostModule } from './post/post.module';
     ArchivoModule,
     EmailModule,
     PostModule,
+    VacanteModule,
   ],
 
 })

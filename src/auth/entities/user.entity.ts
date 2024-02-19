@@ -12,6 +12,8 @@ import { AgenteImage } from "src/agente/entities/agente-image.entity";
 import { Agente } from "src/agente/entities/agente.entity";
 import { Post } from "src/post/entities/post.entity";
 import { PostImage } from "src/post/entities/post-image.entity";
+import { Vacante } from "src/vacante/entities/vacante.entity";
+import { Candidato } from "src/vacante/entities/candidato.entity";
 
 
 
@@ -160,6 +162,21 @@ export class User {
         (agenteImage)=>agenteImage.user
     )
     agenteImage:AgenteImage;
+
+
+     //TODO:RELACIONES CON VACANTES
+
+     @OneToMany(
+        ()=>Vacante,
+        (v)=>v.user
+    )
+    vacante:Vacante;
+
+    @OneToMany(
+        ()=>Candidato,
+        (c)=>c.user
+    )
+    candidato:Candidato;
 
    
 
