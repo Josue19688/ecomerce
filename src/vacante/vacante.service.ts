@@ -181,9 +181,9 @@ export class VacanteService {
   
       
       
-      await this.vacanteRepository.save(vacante);
-      const serializedVacante = stringify(vacante);
-      return serializedVacante;
+      return await this.vacanteRepository.save(vacante);
+      
+       
     } catch (error) {
       this.handleExceptions(error);
     }
