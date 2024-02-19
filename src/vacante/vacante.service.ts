@@ -183,11 +183,11 @@ export class VacanteService {
     try {
 
       
-      if (candidatos) {
+   
         //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-        vacante.candidatos = await this.candidatoRepository.create(candidatos)
+      this.candidatoRepository.create(candidatos)
         
-      }
+      
 
 
      
