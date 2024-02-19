@@ -8,6 +8,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Candidato{
+
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

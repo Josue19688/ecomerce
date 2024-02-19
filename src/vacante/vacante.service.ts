@@ -9,6 +9,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { isUUID } from 'class-validator';
 import { CreateCandidatoDto } from './dto/candidato.dto';
+import { stringify } from 'circular-json';
 
 @Injectable()
 export class VacanteService {
@@ -169,77 +170,27 @@ export class VacanteService {
       throw new NotFoundException('La vacante no fue encontrada');
     }
 
-    vacante.candidatos = await Promise.all(
-      candidatosDto.map(async candidatoDto => {
-          const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
-          nuevoCandidato.vacante = vacante;
-          return await this.candidatoRepository.save(nuevoCandidato);
-      })
-    );
+    try {
+      vacante.candidatos = await Promise.all(
+        candidatosDto.map(async candidatoDto => {
+            const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
+            nuevoCandidato.vacante = vacante;
+            return await this.candidatoRepository.save(nuevoCandidato);
+        })
+      );
+  
+      
+      
+      await this.vacanteRepository.save(vacante);
+      const serializedVacante = stringify(vacante);
+      return serializedVacante;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
 
-    
-    return await this.vacanteRepository.save(vacante);
+   
   }
   
-  // async updateCandidato(
-  //   id: string, 
-  //   updateVacanteDto: UpdateVacanteDto,
-  //   ) {
-  //     const { candidatos, ...toUpdate } = updateVacanteDto;
-  //     const vacante = await this.vacanteRepository.preload({
-  //       id,
-  //       ...toUpdate
-  //     });
-  
-  //     // if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
-  
-  //     // const vacante = await this.vacanteRepository.findOne(id)
-  //     // if (!vacante) {
-  //     //   throw new Error('La vacante no existe');
-  //     // }
-  
-  
-
-  //   try {
-
-  //     const candidatosEntities = await Promise.all(
-  //       candidatos.map(async candidatoData => {
-  //         const { nombre, email, telefono, documentos } = candidatoData;
-  //         const candidato = new Candidato();
-  //         candidato.nombre = nombre;
-  //         candidato.email = email;
-  //         candidato.telefono = telefono;
-  //         candidato.documentos = documentos;
-  //         return await this.candidatoRepository.save(candidato);
-  //       }),
-  //     );
-  
-      
-  //     // if (candidatos) {
-  //     //   //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-  //     //   vacante.candidatos = candidatos.map((data:any) => 
-  //     //     this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
-  //     //   )
-  //     // }
-
-  //     vacante.candidatos = candidatosEntities;
-  //     return await this.vacanteRepository.save(vacante);
-
-     
-      
-  //     //TODO: aqui podemos implementar se le envie un correo al creador de la vacante
-
-  //     return this.findOnePlane(id);
-
-  //   } catch (error) {
-
-      
-
-  //     this.handleExceptions(error);
-  //   }
-  // }
-
-
 
   async remove(id: string) {
     const vacante = await this.findOne(id);
