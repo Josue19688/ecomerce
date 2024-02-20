@@ -18,6 +18,8 @@ import { NovedadService } from 'src/novedad/novedad.service';
 import { VisitaService } from 'src/visita/visita.service';
 import { ArchivoService } from 'src/archivo/archivo.service';
 import { PostService } from 'src/post/post.service';
+import { VacanteService } from 'src/vacante/vacante.service';
+import { GenericDto } from './dto/genericDto';
 
 @ApiTags('Files')
 @Controller('files')
@@ -32,7 +34,8 @@ export class FilesController {
     private readonly visitaService: VisitaService,
     private readonly archivoService: ArchivoService,
     private readonly postService: PostService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly vacanteService:VacanteService
   ) { }
 
 
@@ -131,7 +134,7 @@ export class FilesController {
     @GetUser() user: User
   ) {
 
-    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo','post'];
+    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo','post', 'vacante','candidato'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
@@ -163,12 +166,71 @@ export class FilesController {
       case 'post':
         this.postService.update(id, { images: arrayImages })
         break;
+      case 'vacante':
+        this.vacanteService.update(id, { imagen: arrayImages }, user)
+        break;
+      case 'candidato':
+        this.vacanteService.actualizarDocsCandidato(id, { candidatos: arrayImages })
+        break;
       default:
         'No se encontro el modelo';
     }
 
     return {
       secureUrls
+    }
+
+  }
+
+  
+  /**
+   * Metodo general para subir imagenes o archivos por collecion o entidad
+   * el cual se reutilizara segun necesidades
+   * @param files 
+   * @param id 
+   * @param modelo 
+   * @param user 
+   * @returns 
+   */
+  @Post('uploads/todo')
+  @UseInterceptors(FilesInterceptor('files', undefined, {
+    fileFilter: fileFilters,
+    storage: diskStorage({
+      destination: './static/uploads',
+      filename: fileNames
+    })
+  }))
+  subirDataUploads(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() entityDto:any,
+  ) {
+
+    const modelos = [ 'vacante','candidato'];
+
+    const {modelo, id, ...details } = entityDto;
+
+    if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
+
+    if (!files.length) throw new BadRequestException('File is required, only accepted images');
+    let documents: any[] = [];
+
+    documents = files.map(files => `${this.configService.get('HOST_API')}/files/uploads/${files.filename}`);
+    const arrayData = {...details, documents};
+
+  
+    switch (modelo) {
+      // case 'vacante':
+      //   this.vacanteService.update(id, { imagen: arrayImages }, user)
+      //   break;
+      case 'candidato':
+        this.vacanteService.actualizarDocsCandidato(id, {candidatos:arrayData} )
+        break;
+      default:
+        'No se encontro el modelo';
+    }
+
+    return {
+      arrayData
     }
 
   }

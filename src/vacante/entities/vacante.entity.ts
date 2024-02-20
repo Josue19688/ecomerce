@@ -116,6 +116,21 @@ export class Vacante {
     })
     skills:string[];
 
+
+    @ApiProperty({
+        example:'Imagen o logo de la empesa.',
+        description:'Imagen o logo de la empresa que publica la vacante',
+        nullable:true
+    })
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
+    imagen?:string[];
+
+
+
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;
 

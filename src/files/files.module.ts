@@ -9,6 +9,7 @@ import { NovedadModule } from 'src/novedad/novedad.module';
 import { VisitaModule } from 'src/visita/visita.module';
 import { ArchivoModule } from 'src/archivo/archivo.module';
 import { PostModule } from 'src/post/post.module';
+import { VacanteModule } from 'src/vacante/vacante.module';
 
 @Module({
   controllers: [FilesController],
@@ -21,7 +22,8 @@ import { PostModule } from 'src/post/post.module';
     VisitaModule,
     ArchivoModule,
     ConfigModule,
-    AuthModule
+    AuthModule,
+    VacanteModule
   ]
 })
 export class FilesModule {}

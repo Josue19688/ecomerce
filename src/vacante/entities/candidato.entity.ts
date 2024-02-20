@@ -11,19 +11,28 @@ export class Candidato{
     @PrimaryGeneratedColumn('uuid')
     id:number;
 
-    @Column('text')
-    nombre:string;
-
-    @Column('text')
-    email:string;
-
-    @Column('text')
-    telefono:string;
-
-    @Column('text',{
-        array:true,
-        default:[]
+    @Column({
+        type:'text',
+        nullable:true,
+        
     })
+    nombre?:string;
+
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
+    email?:string;
+
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
+    telefono?:string;
+
+    @Column('text', { array: true,default:[] })
     documentos?:string[];
 
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })

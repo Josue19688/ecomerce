@@ -18,19 +18,19 @@ export class VacanteService {
     private readonly vacanteRepository: Repository<Vacante>,
     @InjectRepository(Candidato)
     private readonly candidatoRepository: Repository<Candidato>,
- 
+
     private readonly dataSource: DataSource,
   ) { }
 
 
-  async create(createVacanteDto: CreateVacanteDto, user:User) {
+  async create(createVacanteDto: CreateVacanteDto, user: User) {
     try {
 
-     
+
       const { candidatos = [], ...vacanteDetails } = createVacanteDto;
       const vacante = this.vacanteRepository.create({
         ...vacanteDetails,
-        candidatos: candidatos.map((data:any)=> this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})),
+        //candidatos: candidatos.map((data:any)=> this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})),
         user
       });
       await this.vacanteRepository.save(vacante);
@@ -55,8 +55,8 @@ export class VacanteService {
   async findAllTen(paginationDto: PaginationDto) {
     const { limit = 12, offset = 0 } = paginationDto;
     const vacantes = await this.vacanteRepository.find({
-      take:limit,
-      skip:offset,
+      take: limit,
+      skip: offset,
       relations: {
         candidatos: true
       }
@@ -65,17 +65,17 @@ export class VacanteService {
     return vacantes;
   }
 
-  async findAllVacantes(userId:string) {
-    
+  async findAllVacantes(userId: string) {
+
     const vacante = await this.vacanteRepository.find({
-      where:{
-        'user':{
-          'id':userId
+      where: {
+        'user': {
+          'id': userId
         }
       }
     });
 
-    return {ok:true, vacante};  
+    return { ok: true, vacante };
   }
 
 
@@ -91,12 +91,12 @@ export class VacanteService {
         .where('titulo=:titulo or slug=:slug or empresa=:empresa or ubicacion=:ubicacion or salario=:salario or contrato=:contrato or estado=:estado or descripcion=:descripcion', {
           titulo: termino.toUpperCase(),
           slug: termino.toLowerCase(),
-          empresa:termino.toLowerCase(),
-          ubicacion:termino.toLowerCase(),
-          salario:termino.toLowerCase(),
-          contrato:termino.toLowerCase(),
-          estado:termino.toLowerCase(),
-          descripcion:termino.toLowerCase(),
+          empresa: termino.toLowerCase(),
+          ubicacion: termino.toLowerCase(),
+          salario: termino.toLowerCase(),
+          contrato: termino.toLowerCase(),
+          estado: termino.toLowerCase(),
+          descripcion: termino.toLowerCase(),
 
         })
         .leftJoinAndSelect('vac.candidatos', 'vacCandidato')
@@ -108,102 +108,48 @@ export class VacanteService {
     return vacante;
   }
 
-  
-  async findOnePlane(termino:string){
-    const vacantes= await this.findOne(termino);
-    
 
-    return {ok:true, vacantes}
+  async findOnePlane(termino: string) {
+    const vacantes = await this.findOne(termino);
+
+
+    return { ok: true, vacantes }
 
   }
 
   async update(
-    id: string, 
+    id: string,
     updateVacanteDto: UpdateVacanteDto,
-    user:User
-    ) {
-    
-      const { candidatos, ...toUpdate } = updateVacanteDto;
-      const vacante = await this.vacanteRepository.preload({
-        id,
-        ...toUpdate
-      });
-  
-      if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
-  
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-  
-      try {
-  
-        if (candidatos) {
-          //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-          vacante.candidatos = candidatos.map((data:any)=> 
-            this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
-          )
-        }
-  
-  
-        vacante.user=user;
-        await queryRunner.manager.save(vacante);
-        await queryRunner.commitTransaction();
-        await queryRunner.release();
-  
-  
-        return this.findOnePlane(id);
-  
-      } catch (error) {
-  
-        await queryRunner.rollbackTransaction();
-        await queryRunner.release();
-  
-        this.handleExceptions(error);
-      }
-  }
+    user: User
+  ) {
 
+    const { candidatos, ...toUpdate } = updateVacanteDto;
+    const vacante = await this.vacanteRepository.preload({
+      id,
+      ...toUpdate
+    });
 
-  async updateCandidato(
-    id: string, 
-    updateVacanteDto: UpdateVacanteDto,
-    ) {
+    if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
 
-     
-      const { candidatos, ...toUpdate } = updateVacanteDto;
-      const vacante = await this.vacanteRepository.preload({
-        id,
-        ...toUpdate
-      });
-  
-      
-      
-      if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
-  
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-  
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
     try {
 
-      /**
-       * para poder actualizar solo los candidatos tendremos que eliminar antes y despues mandar los datos anteriores y el nuevo
-       * dato 
-       */
       if (candidatos) {
         //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-        vacante.candidatos = candidatos.map((data:any) => 
-          this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono, documentos:data.documentos})
-        )
+        // vacante.candidatos = candidatos.map((data:any)=> 
+        //   this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
+        // )
       }
 
 
-     
+      vacante.user = user;
       await queryRunner.manager.save(vacante);
       await queryRunner.commitTransaction();
       await queryRunner.release();
 
-      //TODO: aqui podemos implementar se le envie un correo al creador de la vacante
 
       return this.findOnePlane(id);
 
@@ -216,12 +162,46 @@ export class VacanteService {
     }
   }
 
+  async actualizarDocsCandidato(
+    id: string,
+    c: any
+  ) {
+
+    const { candidatos, ...toUpdate } = c;
+    const vacante = await this.vacanteRepository.preload({
+      id,
+      ...toUpdate
+    });
+
+    if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
+
+    try {
+      const candidato = this.candidatoRepository.create({
+        nombre: candidatos.nombre,
+        email: candidatos.email,
+        telefono: candidatos.telefono,
+        documentos: candidatos.documents, vacante
+      })
+
+      const respuesta = await this.candidatoRepository.save(candidato);
+      return respuesta;
+
+    } catch (error) {
+      this.handleExceptions(error);
+    }
+
+
+
+
+  }
+
+
 
 
   async remove(id: string) {
     const vacante = await this.findOne(id);
     await this.vacanteRepository.remove(vacante);
-    return {ok:true,msg:'Registro  Eliminado'};
+    return { ok: true, msg: 'Registro  Eliminado' };
   }
 
 
@@ -235,4 +215,8 @@ export class VacanteService {
     this.logger.error(error);
     throw new InternalServerErrorException(`Error al crear el registro en el servidor`);
   }
+
+
+
+
 }

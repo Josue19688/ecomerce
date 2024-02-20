@@ -63,13 +63,13 @@ export class VacanteController {
     return this.vacanteService.update(id, updateVacanteDto, user);
   }
 
-  @Put(':id')
-  updateCandidatos(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateVacanteDto: UpdateVacanteDto
-    ) {
-    return this.vacanteService.updateCandidato(id, updateVacanteDto);
-  }
+  // @Put(':id')
+  // updateCandidatos(
+  //   @Param('id', ParseUUIDPipe) id: string,
+  //   @Body() updateVacanteDto: UpdateVacanteDto
+  //   ) {
+  //   return this.vacanteService.updateCandidato(id, updateVacanteDto);
+  // }
 
   @Delete(':id')
   @Auth()
