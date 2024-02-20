@@ -8,8 +8,6 @@ import { Candidato } from './entities/candidato.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.tdo';
 import { isUUID } from 'class-validator';
-import { CreateCandidatoDto } from './dto/candidato.dto';
-import { stringify } from 'circular-json';
 
 @Injectable()
 export class VacanteService {
@@ -165,17 +163,12 @@ export class VacanteService {
   }
 
 
-
-  async actualizarCandidatos(
+  async updateCandidato(
     id: string, 
-    updateVacanteDto: UpdateVacanteDto
+    updateVacanteDto: UpdateVacanteDto,
     ) {
-<<<<<<< HEAD
 
      
-=======
-    
->>>>>>> 777db3f682b90973b8b373437208e00f96560eb6
       const { candidatos, ...toUpdate } = updateVacanteDto;
       const vacante = await this.vacanteRepository.preload({
         id,
@@ -189,7 +182,6 @@ export class VacanteService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
   
-<<<<<<< HEAD
 
     try {
 
@@ -199,65 +191,31 @@ export class VacanteService {
        */
       if (candidatos) {
         await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-        vacante.candidatos = candidatos.map((data:any) => 
+        vacante.candidatos = candidatos.map((data => 
           this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
         )
-=======
-      try {
-  
-        if (candidatos) {
-          //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
-          vacante.candidatos = candidatos.map(data=> 
-            this.candidatoRepository.create(data)
-          )
-        }
-  
-  
-        
-        await queryRunner.manager.save(vacante);
-        await queryRunner.commitTransaction();
-        await queryRunner.release();
-  
-  
-        return this.findOnePlane(id);
-  
-      } catch (error) {
-  
-        await queryRunner.rollbackTransaction();
-        await queryRunner.release();
-  
-        this.handleExceptions(error);
->>>>>>> 777db3f682b90973b8b373437208e00f96560eb6
       }
+
+
+     
+      await queryRunner.manager.save(vacante);
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      //TODO: aqui podemos implementar se le envie un correo al creador de la vacante
+
+      return this.findOnePlane(id);
+
+    } catch (error) {
+
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+
+      this.handleExceptions(error);
+    }
   }
 
-  // async actualizarCandidatos(idVacante: string, candidatosDto: CreateCandidatoDto[]): Promise<Vacante> {
-  //   const vacante = await this.vacanteRepository.findOneBy({ id: idVacante });
-  //   if (!vacante) {
-  //     throw new NotFoundException('La vacante no fue encontrada');
-  //   }
 
-  //   try {
-  //     vacante.candidatos = await Promise.all(
-  //       candidatosDto.map(async candidatoDto => {
-  //           const nuevoCandidato = this.candidatoRepository.create(candidatoDto);
-  //           nuevoCandidato.vacante = vacante;
-  //           return await this.candidatoRepository.save(nuevoCandidato);
-  //       })
-  //     );
-  
-      
-      
-  //     return await this.vacanteRepository.save(vacante);
-      
-       
-  //   } catch (error) {
-  //     this.handleExceptions(error);
-  //   }
-
-   
-  // }
-  
 
   async remove(id: string) {
     const vacante = await this.findOne(id);
