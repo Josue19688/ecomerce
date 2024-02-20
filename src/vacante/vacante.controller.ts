@@ -68,7 +68,6 @@ export class VacanteController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateVacanteDto: UpdateVacanteDto
     ) {
-     
     return this.vacanteService.updateCandidato(id, updateVacanteDto);
   }
 

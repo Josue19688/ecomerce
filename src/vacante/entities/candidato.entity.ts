@@ -8,7 +8,7 @@ import { Vacante } from './vacante.entity';
 @Entity()
 export class Candidato{
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id:number;
 
     @Column('text')
