@@ -81,14 +81,13 @@ export class CreateVacanteDto {
 
 
     @ApiProperty({
-        description:'Arreglo candidatos',
+        description:'Arreglo de imagenes ',
         nullable:true
     })
-    @IsString({each:true})
+    
     @IsArray()
     @IsOptional()
-    candidatos?:string[];
-
+    candidatos?:Candidato[];
 
 
     

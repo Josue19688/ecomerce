@@ -8,7 +8,7 @@ import { Vacante } from './vacante.entity';
 @Entity()
 export class Candidato{
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id:number;
 
     @Column('text')
@@ -24,7 +24,7 @@ export class Candidato{
         array:true,
         default:[]
     })
-    documentos:string[];
+    documentos?:string[];
 
     @CreateDateColumn({ type: 'timestamptz',default: () => "CURRENT_TIMESTAMP(6)"  })
     createdAt: Date;

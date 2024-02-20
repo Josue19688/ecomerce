@@ -167,12 +167,15 @@ export class VacanteService {
     id: string, 
     updateVacanteDto: UpdateVacanteDto,
     ) {
+
+     
       const { candidatos, ...toUpdate } = updateVacanteDto;
       const vacante = await this.vacanteRepository.preload({
         id,
         ...toUpdate
       });
   
+      console.log(updateVacanteDto)
       if (!vacante) throw new NotFoundException(`El registro con ${id} no existe`);
   
       const queryRunner = this.dataSource.createQueryRunner();
@@ -182,9 +185,12 @@ export class VacanteService {
 
     try {
 
-      
+      /**
+       * para poder actualizar solo los candidatos tendremos que eliminar antes y despues mandar los datos anteriores y el nuevo
+       * dato 
+       */
       if (candidatos) {
-        //await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
+        await queryRunner.manager.delete(Candidato, { candidatos: { id } }); //habilitamos si primero queremos borrar datos anteriores
         vacante.candidatos = candidatos.map((data:any) => 
           this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})
         )
