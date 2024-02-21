@@ -210,17 +210,19 @@ export class FilesController {
 
     const modelos = [ 'vacante','candidato'];
 
-    const {modelo, id, ...details } = entityDto;
+    const {modelo, ...details } = entityDto;
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
     if (!files.length) throw new BadRequestException('File is required, only accepted images');
-    let imagen: any[] = [];
+    let imagens: any[] = [];
 
-    imagen = files.map(files => `${this.configService.get('HOST_API')}/files/uploads/${files.filename}`);
+    imagens = files.map(files => `${this.configService.get('HOST_API')}/files/uploads/${files.filename}`);
+
+    const imagen=imagens[0];
+  
     const arrayData:CreateVacanteDto = {...details, imagen};
 
-  
     switch (modelo) {
       case 'vacante':
         this.vacanteService.createVacante(arrayData , user)
@@ -232,9 +234,7 @@ export class FilesController {
         'No se encontro el modelo';
     }
 
-    return {
-      arrayData
-    }
+    return arrayData;
 
   }
 

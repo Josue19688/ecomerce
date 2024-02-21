@@ -83,7 +83,7 @@ export class CreateVacanteDto {
         description:'Imagen o logo de la empresa que publica la vacante',
         nullable:true
     })
-    @IsString()
+    @IsString({each:true})
     @IsOptional()
     imagen?:string[];
 

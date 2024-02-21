@@ -30,7 +30,6 @@ export class VacanteService {
       const { candidatos = [], ...vacanteDetails } = createVacanteDto;
       const vacante = this.vacanteRepository.create({
         ...vacanteDetails,
-        //candidatos: candidatos.map((data:any)=> this.candidatoRepository.create({nombre:data.nombre, email:data.email, telefono:data.telefono})),
         user
       });
       await this.vacanteRepository.save(vacante);
@@ -169,7 +168,7 @@ export class VacanteService {
     ) {
     try {
 
- console.log(createVacanteDto)
+      
 
       const vacante = this.vacanteRepository.create({
         titulo:createVacanteDto.titulo,
@@ -184,8 +183,10 @@ export class VacanteService {
         imagen:createVacanteDto.imagen,
         user
       });
-      await this.vacanteRepository.save(vacante);
-      return vacante;
+     
+      const respuesta = await this.vacanteRepository.save(vacante);
+      console.log(respuesta)
+      return respuesta;
 
     } catch (error) {
 
