@@ -20,6 +20,7 @@ import { ArchivoService } from 'src/archivo/archivo.service';
 import { PostService } from 'src/post/post.service';
 import { VacanteService } from 'src/vacante/vacante.service';
 import { GenericDto } from './dto/genericDto';
+import { CreateVacanteDto } from 'src/vacante/dto/create-vacante.dto';
 
 @ApiTags('Files')
 @Controller('files')
@@ -192,7 +193,8 @@ export class FilesController {
    * @param user 
    * @returns 
    */
-  @Post('uploads/todo')
+  @Post('uploads/model')
+  @Auth()
   @UseInterceptors(FilesInterceptor('files', undefined, {
     fileFilter: fileFilters,
     storage: diskStorage({
@@ -201,6 +203,60 @@ export class FilesController {
     })
   }))
   subirDataUploads(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() entityDto:any,
+    @GetUser() user: User
+  ) {
+
+    const modelos = [ 'vacante','candidato'];
+
+    const {modelo, id, ...details } = entityDto;
+
+    if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
+
+    if (!files.length) throw new BadRequestException('File is required, only accepted images');
+    let imagen: any[] = [];
+
+    imagen = files.map(files => `${this.configService.get('HOST_API')}/files/uploads/${files.filename}`);
+    const arrayData:CreateVacanteDto = {...details, imagen};
+
+  
+    switch (modelo) {
+      case 'vacante':
+        this.vacanteService.createVacante(arrayData , user)
+        break;
+      // case 'candidato':
+      //   this.vacanteService.actualizarDocsCandidato(id, {candidatos:arrayData} )
+      //   break;
+      default:
+        'No se encontro el modelo';
+    }
+
+    return {
+      arrayData
+    }
+
+  }
+
+
+  /**
+   * Metodo general para subir imagenes o archivos por collecion o entidad
+   * el cual se reutilizara segun necesidades
+   * @param files 
+   * @param id 
+   * @param modelo 
+   * @param user 
+   * @returns 
+   */
+  @Post('uploads/todo')
+  @UseInterceptors(FilesInterceptor('files', undefined, {
+    fileFilter: fileFilters,
+    storage: diskStorage({
+      destination: './static/uploads',
+      filename: fileNames
+    })
+  }))
+  subirDataUploadsTodo(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() entityDto:any,
   ) {

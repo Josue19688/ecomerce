@@ -162,6 +162,38 @@ export class VacanteService {
     }
   }
 
+
+  async createVacante(
+    createVacanteDto: CreateVacanteDto, 
+    user: User
+    ) {
+    try {
+
+ console.log(createVacanteDto)
+
+      const vacante = this.vacanteRepository.create({
+        titulo:createVacanteDto.titulo,
+        slug:createVacanteDto.titulo,
+        empresa:createVacanteDto.empresa,
+        ubicacion:createVacanteDto.ubicacion,
+        salario:createVacanteDto.salario,
+        contrato:createVacanteDto.contrato,
+        estado:'creado',
+        descripcion:createVacanteDto.descripcion,
+        skills:createVacanteDto.skills,
+        imagen:createVacanteDto.imagen,
+        user
+      });
+      await this.vacanteRepository.save(vacante);
+      return vacante;
+
+    } catch (error) {
+
+      this.handleExceptions(error);
+    }
+  }
+
+
   async actualizarDocsCandidato(
     id: string,
     c: any

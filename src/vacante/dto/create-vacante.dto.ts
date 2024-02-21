@@ -76,7 +76,8 @@ export class CreateVacanteDto {
     })
     @IsString({each:true})
     @IsArray()
-    skills:string[];
+    @IsOptional()
+    skills?:string[];
 
     @ApiProperty({
         description:'Imagen o logo de la empresa que publica la vacante',

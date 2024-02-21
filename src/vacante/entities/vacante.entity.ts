@@ -21,7 +21,11 @@ export class Vacante {
         example:'T-shirt',
         description:'Nombre del producto',
     })
-    @Column('text')
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
     titulo:string;
 
 
@@ -29,7 +33,11 @@ export class Vacante {
         example:'T-shirt-color-blanco',
         description:'Referencia para ceo'
     })
-    @Column('text')
+    @Column({
+        type:'text',
+        nullable:true,
+        
+    })
     slug:string;
 
     @ApiProperty({
@@ -114,7 +122,7 @@ export class Vacante {
         array:true,
         default:[]
     })
-    skills:string[];
+    skills?:string[];
 
 
     @ApiProperty({
@@ -152,35 +160,35 @@ export class Vacante {
 
  
 
-    @BeforeInsert()
-    checkSlugInsert(){
-        if(!this.slug){
-          this.slug=this.titulo
-        }
+    // @BeforeInsert()
+    // checkSlugInsert(){
+    //     if(!this.slug){
+    //       this.slug=this.titulo
+    //     }
 
-        this.slug=this.slug
-          .toLocaleLowerCase()
-          .replaceAll(' ','_')
-          .replaceAll("'",'')
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .trim()
-    }
+    //     this.slug=this.slug
+    //       .toLocaleLowerCase()
+    //       .replaceAll(' ','_')
+    //       .replaceAll("'",'')
+    //       .normalize("NFD")
+    //       .replace(/[\u0300-\u036f]/g, "")
+    //       .trim()
+    // }
 
-    @BeforeUpdate()
-    checkSlugUpdate(){
-        if(!this.slug){
-          this.slug=this.titulo
-        }
+    // @BeforeUpdate()
+    // checkSlugUpdate(){
+    //     if(!this.slug){
+    //       this.slug=this.titulo
+    //     }
 
-        this.slug=this.slug
-          .toLocaleLowerCase()
-          .replaceAll(' ','_')
-          .replaceAll("'",'')
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .trim()
-    }
+    //     this.slug=this.slug
+    //       .toLocaleLowerCase()
+    //       .replaceAll(' ','_')
+    //       .replaceAll("'",'')
+    //       .normalize("NFD")
+    //       .replace(/[\u0300-\u036f]/g, "")
+    //       .trim()
+    // }
 
 
 }
