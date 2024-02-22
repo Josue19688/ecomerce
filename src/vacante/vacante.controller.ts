@@ -40,6 +40,7 @@ export class VacanteController {
 
   //me mostrara solo las que son especificas del creador no otras de otros creadores
   @Get('user')
+  @Auth()
   findAllVisitas(
     @GetUser() user:User
   ) {
