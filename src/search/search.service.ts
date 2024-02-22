@@ -10,6 +10,8 @@ import { SearchTerminoDto } from 'src/common/dto/searchTermino.dto';
 import { Novedad } from 'src/novedad/entities/novedad.entity';
 
 import { Product, ProductImage } from 'src/products/entities';
+import { Candidato } from 'src/vacante/entities/candidato.entity';
+import { Vacante } from 'src/vacante/entities/vacante.entity';
 import { Visita } from 'src/visita/entities/visita.entity';
 import { ArrayContains, Between, Like, Repository } from 'typeorm';
 
@@ -31,6 +33,10 @@ export class SearchService {
     private readonly archivoRepository: Repository<Archivo>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Vacante)
+    private readonly vacanteRepository: Repository<Vacante>,
+    @InjectRepository(Candidato)
+    private readonly candidatoRepository: Repository<Candidato>,
   ) { }
 
 
@@ -45,7 +51,7 @@ export class SearchService {
   async findAllModelsDate(searchDto: SearchDto) {
     const { inicio, fin, modelo } = searchDto;
 
-    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo'];
+    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo', 'vacante', 'candidato'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
@@ -135,12 +141,35 @@ export class SearchService {
           }
         })
         break;
+      case 'vacante':
+        data = await this.vacanteRepository.find({
+          where: {
+            createdAt: Between(
+              new Date(inicio),
+              new Date(fin)
+            ),
+          },
+          relations: {
+            candidatos: true
+          }
+        })
+        break;
+      case 'candidato':
+        data = await this.candidatoRepository.find({
+          where: {
+            createdAt: Between(
+              new Date(inicio),
+              new Date(fin)
+            ),
+          }
+        })
+        break;
       default:
         return { ok: false, msg: 'Collecion no encontrada' };
 
     }
-    
-    return {resultado:data};
+
+    return { resultado: data };
 
   }
 
@@ -148,7 +177,7 @@ export class SearchService {
 
     const { modelo, termino, inicio, fin } = searchTerminoDto;
 
-    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo'];
+    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo','vacante','candidato'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
@@ -212,7 +241,7 @@ export class SearchService {
               fecha: Between(
                 new Date(inicio),
                 new Date(fin)
-              ) ,
+              ),
             }
           ],
           relations: {
@@ -334,12 +363,62 @@ export class SearchService {
         }))
 
         break;
+      case 'vacante':
+
+        const vacante = await this.vacanteRepository.find({
+          where: [
+            {
+              titulo: Like(`%${termino}%`)
+            },
+            {
+              empresa: Like(`%${termino}%`)
+            },
+            {
+              salario: Like(`%${termino}%`)
+            },
+            {
+              contrato: Like(`%${termino}%`)
+            },
+            {
+              ubicacion: Like(`%${termino}%`)
+            },
+            {
+              descripcion: Like(`%${termino}%`)
+            },
+          ],
+          relations: {
+            candidatos: true
+          }
+        })
+
+        data = vacante
+
+        break;
+      case 'candidato':
+
+        const candidato = await this.candidatoRepository.find({
+          where: [
+            {
+              nombre: Like(`%${termino}%`)
+            },
+            {
+              email: Like(`%${termino}%`)
+            },
+            {
+              telefono: Like(`%${termino}%`)
+            }
+          ]
+        })
+
+        data = candidato
+
+        break;
       default:
         return { ok: false, msg: 'Collecion no encontrada' };
 
     }
 
-    return {resultado:data};
+    return { resultado: data };
 
   }
 
@@ -350,9 +429,9 @@ export class SearchService {
 
   async findAllModelosTerminos(searchFindAllDto: SearchFindAllDto) {
 
-    const { modelo, termino} = searchFindAllDto;
+    const { modelo, termino } = searchFindAllDto;
 
-    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo'];
+    const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo','vacante','candidato'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
@@ -412,7 +491,7 @@ export class SearchService {
             {
               descripcion: Like(`%${termino}%`)
             },
-            
+
           ],
           relations: {
             images: true
@@ -541,128 +620,128 @@ export class SearchService {
 
     }
 
-    return {resultado:data};
+    return { resultado: data };
 
   }
 
- 
+
   /**
    * Reporteria
    */
 
-  async countModels(){
-    let data:any[]=[];
+  async countModels() {
+    let data: any[] = [];
 
-    const usuario =await this.userRepository.count();
+    const usuario = await this.userRepository.count();
     const agente = await this.agenteRepository.count();
     const novedad = await this.novedadRepository.count();
     const visita = await this.visitaRepository.count();
     const archivo = await this.archivoRepository.count();
-    
-    data.push(usuario,agente,novedad,visita,archivo);
+
+    data.push(usuario, agente, novedad, visita, archivo);
     return data;
-   
+
   }
 
-  
 
-  async graficas(graficaModeloDto:GraficaModeloDto){
-    const {modelo}=graficaModeloDto;
+
+  async graficas(graficaModeloDto: GraficaModeloDto) {
+    const { modelo } = graficaModeloDto;
     const modelos = ['usuario', 'producto', 'novedad', 'agente', 'visita', 'archivo'];
 
     if (!modelos.includes(modelo)) throw new BadRequestException('Models NotFound...');
 
-    let data:any[]=[];
-   
+    let data: any[] = [];
+
     switch (modelo) {
       case 'producto':
         data = await this.productRepository
-        .createQueryBuilder('producto')
-        .select("producto.title")
-        .addSelect("COUNT(*)")
-        .groupBy("producto.title")
-        .execute();
+          .createQueryBuilder('producto')
+          .select("producto.title")
+          .addSelect("COUNT(*)")
+          .groupBy("producto.title")
+          .execute();
         break;
       case 'usuario':
         data = await this.userRepository
-        .createQueryBuilder('user')
-        .select("user.isActive")
-        .addSelect("COUNT(*)")
-        .groupBy("user.isActive")
-        .execute();
+          .createQueryBuilder('user')
+          .select("user.isActive")
+          .addSelect("COUNT(*)")
+          .groupBy("user.isActive")
+          .execute();
         break;
       case 'novedad':
         data = await this.novedadRepository
-        .createQueryBuilder('novedad')
-        .select("novedad.tipo")
-        .addSelect("COUNT(*)")
-        .groupBy("novedad.tipo")
-        .execute();
+          .createQueryBuilder('novedad')
+          .select("novedad.tipo")
+          .addSelect("COUNT(*)")
+          .groupBy("novedad.tipo")
+          .execute();
         break;
       case 'visita':
         data = await this.visitaRepository
-        .createQueryBuilder('visita')
-        .select("visita.tipo")
-        .addSelect("COUNT(*)")
-        .groupBy("visita.tipo")
-        .execute();
+          .createQueryBuilder('visita')
+          .select("visita.tipo")
+          .addSelect("COUNT(*)")
+          .groupBy("visita.tipo")
+          .execute();
         break;
       case 'agente':
         data = await this.agenteRepository
-        .createQueryBuilder('agente')
-        .select("agente.puesto")
-        .addSelect("COUNT(*)")
-        .groupBy("agente.puesto")
-        .execute();
+          .createQueryBuilder('agente')
+          .select("agente.puesto")
+          .addSelect("COUNT(*)")
+          .groupBy("agente.puesto")
+          .execute();
         break;
       case 'archivo':
         data = await this.archivoRepository
-        .createQueryBuilder('archivo')
-        .select("archivo.tipo")
-        .addSelect("COUNT(*)")
-        .groupBy("archivo.tipo")
-        .execute();
+          .createQueryBuilder('archivo')
+          .select("archivo.tipo")
+          .addSelect("COUNT(*)")
+          .groupBy("archivo.tipo")
+          .execute();
         break;
       default:
         return { ok: false, msg: 'Collecion no encontrada' };
 
     }
 
-    return {resultado:data};
+    return { resultado: data };
 
   }
 
   ///para visitas de hoy actual
 
-  async SearchVisitaByDate(){
+  async SearchVisitaByDate() {
 
 
     let date = new Date()
-    let day = `${(date.getDate())}`.padStart(2,'0');
-    let month = `${(date.getMonth()+1)}`.padStart(2,'0');
+    let day = `${(date.getDate())}`.padStart(2, '0');
+    let month = `${(date.getMonth() + 1)}`.padStart(2, '0');
     let year = date.getFullYear();
-    
-    const hoy =`${year}-${month}-${day}`;
-    
+
+    const hoy = `${year}-${month}-${day}`;
+
     const data = await this.visitaRepository.find({
-      where:{
-        autorizacion_admin:true,
-        autorizacion_seguridad:true,
-        fechas:ArrayContains([hoy])
+      where: {
+        autorizacion_admin: true,
+        autorizacion_seguridad: true,
+        fechas: ArrayContains([hoy])
       },
-      relations:{
-        images:true
+      relations: {
+        images: true
       }
     })
-    
-        
 
-    const visitas = data.map(item=>({
+
+
+    const visitas = data.map(item => ({
       ...item,
-      images:item.images.map(img=>img.url)
+      images: item.images.map(img => img.url)
     }))
 
-    return {ok:true, visitas};
+    return { ok: true, visitas };
   }
 
 

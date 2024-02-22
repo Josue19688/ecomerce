@@ -161,7 +161,7 @@ export class VacanteService {
     }
   }
 
-
+//los metodos que estamos usando 
   async createVacante(
     createVacanteDto: CreateVacanteDto, 
     user: User
@@ -228,6 +228,8 @@ export class VacanteService {
 
   }
 
+
+   
 
 
 

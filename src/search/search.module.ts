@@ -7,6 +7,7 @@ import { NovedadModule } from 'src/novedad/novedad.module';
 import { AgenteModule } from 'src/agente/agente.module';
 import { ArchivoModule } from 'src/archivo/archivo.module';
 import { VisitaModule } from 'src/visita/visita.module';
+import { VacanteModule } from 'src/vacante/vacante.module';
 
 @Module({
   controllers: [SearchController],
@@ -17,6 +18,7 @@ import { VisitaModule } from 'src/visita/visita.module';
     AgenteModule,
     ArchivoModule,
     VisitaModule,
+    VacanteModule,
     AuthModule,
   ]
 })
